@@ -1,9 +1,138 @@
-{% extends "base_generic.html" %}
+<!DOCTYPE html><html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+	<meta name="description" content="iCn3D Structure Viewer">
+	<meta name="ncbi_app" content="structure">
+	<meta name="ncbi_pdid" content="icn3d">
+	<meta name="ncbi_page" content="example">
+	<meta name="ncbi_pinger_xml_http_request_override" content="false"/>
+	<script type="text/javascript">
+		window.ncbi_startTime = new Date();
+	</script>
 
-{% block content %}
+	<style type="text/css">
+		.gallery {float:left; padding: 5px; margin: 10px;}
 
-<h1><strong>ID:</strong> {{ homology.idProt }}</h1>
-<p><strong>sequence:</strong> {{ homology.sequence }}</p>
+		body {font-family: Verdana, Arial, Helvetica, sans-serif;}
+	</style>
 
-{% endblock %}
+</head>
+<body>
+
+	
+	{% extends "base_generic.html" %}
+
+	{% block content %}
+
+	<h1><strong>ID:</strong> {{ homology.idProt }}</h1>
+	<p><strong>sequence:</strong> {{ homology.sequence }}</p>
+
+	
+	<div id="div3DView" class="gallery"></div>
+
+	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.css">
+	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d_full_ui.css">
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery.min.js"></script>
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.js"></script>
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/three.min.js"></script>
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d_full_ui.min.js"></script>
+
+	<script type="text/javascript">
+		$( document ).ready(function() {
+			// --Modify iCn3D Method 3--: start modifying iCn3DUI and iCn3D =================================================================
+			iCn3DUI.prototype.setTools = function() {
+				var me = this, ic = me.icn3d; "use strict";
+				var html = "";
+				html += me.divStr + "selection' style='display:none;'><div style='position:absolute; z-index:555; float:left; display:table-row; margin: 32px 0px 0px 3px;'>";
+				html += "<table style='margin-top: 3px; width:100px;'><tr valign='center'>";
+				html += me.setTools_base();
+				var buttonStyle = me.isMobile() ? 'none' : 'button';
+				var tdStr = "<td valign='top'>";
+
+				// start adding custom buttons ==========
+				// e.g., html += tdStr + me.setButton(buttonStyle, 'saveimage', 'Save iCn3D PNG Image', 'Save iCn3D<br/>PNG Image') + "</td>";
+				// end adding custom buttons ==========
+
+				html += "</tr></table>";
+				html += "</div></div>";
+				return html;
+			};
+
+			iCn3DUI.prototype.allCustomEvents = function() { 
+				var me = this;
+			};
+
+			iCn3DUI.prototype.setCustomDialogs = function() { 
+				var me = this, ic = me.icn3d; "use strict";
+				var html = "";
+				return html;
+			};
+
+			// modify iCn3D function
+			iCn3DUI.prototype.modifyIcn3d = function() { 
+				var  me = this; "use strict";
+				me.modifyIcn3dshowPicking();
+			};
+			// end modifying iCn3D ============================================================
+
+			window.icn3duiHash = {};
+
+			function setupViewer(idName, idValue, divid, command) {
+				var options = {};
+
+				// --Three Methods to modify the iCn3D view--
+				// --Modify iCn3D Method 1--: You can change the default options.
+				//Options are available at: https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.html#DisplayOptions
+				options['chemicalbinding'] = 'show';
+
+				// --Modify iCn3D Method 2--: add commands, e.g., 'color spectrum'
+				command = (command) ? command : '';
+
+				var cfg = {
+					divid: divid,
+					width: 300,
+					height: 300,
+					mobilemenu: true,
+					showcommand: false,
+					showtitle: false,
+					command: command,
+					options: options
+				};
+				if(idName !== '') cfg[idName] = idValue;
+
+				var icn3dui = new iCn3DUI(cfg);
+				//icn3dui.show3DStructure();
+
+				//communicate with the 3D viewer with chained functions
+				$.when(icn3dui.show3DStructure()).then(function() {
+					// add functions here
+					//icn3dui.updateHlAll();
+				});
+
+				window.icn3duiHash[divid] = icn3dui;
+			}
+
+			idProt = '{{ homology.idProt }}';
+			setupViewer('pdbid', idProt, 'div3DView');
+
+			//var command = "defined sets; select sets 4L03_A; color 87CEEB; style proteins cylinder and plate; select sets 6KDY_A; color FA8072; style proteins cylinder and plate; select sets 4L03_A or 6KDY_A; show selection; set background white; close popup";
+			//setupViewer('align', '4L03,6KDY', 'div3DView', command);
+
+		}); // document ready
+
+	</script>
+
+	<!-- log & Google Analytics -->
+	<script type="text/javascript" src="https://www.ncbi.nlm.nih.gov/core/pinger/pinger.js"></script>
+
+	
+	{% endblock %}
+
+</body>
+
+</html>
+  
+  
 
