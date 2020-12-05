@@ -1,18 +1,31 @@
-import math
+from Bio import SeqIO
+
+
 def getName(line):
-    return line[0:35]
+    endOfName = 35
+    for i in range(1, len(line)):
+        if line[i:i + 6] == "      ":
+            endOfName == i
+            break
+    return line[0:endOfName]
 
 
 def getSeq(line):
-    return line[36:86]
+    endOfName = 35
+    for i in range(1, len(line)):
+        if line[i:i + 6] == "      ":
+            endOfName == i
+            break
+    return line[i + 6:i + 56]
 
 
 def addToSeqs(line, seqs):
-    if(len(getName(line).strip()) != 0):
+    if (len(getName(line).strip()) != 0):
         if (getName(line) in seqs):
             seqs[getName(line)] = seqs[getName(line)] + getSeq(line)
         else:
             seqs[getName(line)] = getSeq(line)
+
 
 def getSeqs():
     filepath = 'aligned.fasta'
@@ -25,50 +38,49 @@ def getSeqs():
     fp.close()
     return seqs
 
+
 def calculateConservation(inlineAminoacids):
-    #Calcula el nivel de conservacion es UNA COLUMNA de aminoacidos
-    # El valor estará entre 0 y 1 -0 -> no conservado,1 -> 100% conservado-
-    ## PREGUNTAR :  Que pasa si la poteina original ingresada por el usuario no tiene ese aminoacido pero todos los demas si, se considera conservado? o.O
+    # Devuelve un par (A,porcentaje) donde A es el aminoacido con mayor apariciones.
+    # Calcula el nivel de conservacion es UNA COLUMNA de aminoacidos
     aminos = {}
     for amino in inlineAminoacids:
-        if(not amino in aminos):
+        if (not amino in aminos):
             aminos[amino] = 1
         else:
             aminos[amino] = aminos[amino] + 1
-    if('-' in aminos):del aminos['-']
-    maxValue = max(list(aminos.values()))
-    return round(maxValue / len(inlineAminoacids)* 100,3)
+    maxx = ('-', 0)
+    for key, value in aminos.items():
+        if value > maxx[1] and '-' != key:
+            maxx = (key, value)
+    return maxx[0], round(maxx[1] / len(inlineAminoacids) * 100, 3)
 
 
-def calculateConsevedZone(porcentage):
-    seqs = getSeqs()
+def calculateConservedZone(porcentage):
+    seqs = SeqIO.parse('aligned.fasta', 'clustal')
+    original = next(seqs)
     matching = []
-    original = seqs[list(seqs.keys())[0]]
     i = 0
     for a in original:
-        inlineAminoacids= []
-        for v in list(seqs.values()):
-            if(len(v) > i):
-                inlineAminoacids.append(v[i])
-            else:
-                # Agrega - para cuando los alineamientos son de distinto tamaño
-                inlineAminoacids.append("-")
-        i+=1
-        matching.append((a, calculateConservation(inlineAminoacids)))
+        inlineAminoacids = [a]
+        for record in SeqIO.parse('aligned.fasta', 'clustal'):
+            inlineAminoacids.append(record.seq[i])
+        i += 1
+        matching.append(calculateConservation(inlineAminoacids))
+    print('Secuencia de pares (amino,porcentaje): \n')
+    print(str(matching) + "\n")
+    print(len(matching)," resultados")
+    print("Secuencia que cumple con el nivel de conservacion")
+    print(filterByConservationPorcentage(porcentage, matching))
     return matching
 
+
 def aminoOrMinus(pair, porcentage):
-    if(pair[1]>=porcentage):
+    if (pair[1] >= porcentage):
         return pair[0]
     else:
         return '-'
 
+
 def filterByConservationPorcentage(porcentage, matching):
     # Se puede usar para obtener la secuencia solo con los aminoacidos que cumplen el porcentaje de conservacion
     return list(map(lambda pair: aminoOrMinus(pair, porcentage), matching))
-
-cons = calculateConsevedZone(80)
-print("Secuencia de pares (amino,porcentaje): \n")
-print(str(cons) +  "\n")
-print("Secuencia que cumple con el nivel de conservacion")
-print(filterByConservationPorcentage(90,cons))
