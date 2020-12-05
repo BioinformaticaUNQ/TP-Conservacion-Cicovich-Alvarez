@@ -10,6 +10,6 @@ def align(windows):
         assert os.path.isfile(clustalw_exe), "Clustal W executable missing"
         stdout, stderr = clustalw_cline()
     else:
-        in_file = 'SecuenciasCytocromoC.fasta'
+        in_file = 'clustal.fasta'
         clustalw_cline = ClustalwCommandline('clustalw', infile=in_file, outfile='aligned.fasta')
-        print(clustalw_cline())
+        clustalw_cline()
