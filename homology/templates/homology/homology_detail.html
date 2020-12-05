@@ -32,6 +32,10 @@
 	
 	<div id="div3DView" class="gallery"></div>
 
+	<input type="button" onclick="setViewer_SingleElement('{{ homology.idProt }}');" value="{{ homology.idProt }}" />
+	<input type="button" onclick="setViewer_ManyElements([['4L03','87CEEB'],['6KDY','FA8072']]);" value="4L03 | 6KDY" />
+	<input type="button" onclick="setViewer_ManyElements([['2JF3','87CEEB'],['2AQ9','FA8072']]);" value="2JF3 | 2AQ9" />
+
 	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.css">
 	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d_full_ui.css">
 	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery.min.js"></script>
@@ -79,49 +83,69 @@
 
 			window.icn3duiHash = {};
 
-			function setupViewer(idName, idValue, divid, command) {
-				var options = {};
-
-				// --Three Methods to modify the iCn3D view--
-				// --Modify iCn3D Method 1--: You can change the default options.
-				//Options are available at: https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.html#DisplayOptions
-				options['chemicalbinding'] = 'show';
-
-				// --Modify iCn3D Method 2--: add commands, e.g., 'color spectrum'
-				command = (command) ? command : '';
-
-				var cfg = {
-					divid: divid,
-					width: 300,
-					height: 300,
-					mobilemenu: true,
-					showcommand: false,
-					showtitle: false,
-					command: command,
-					options: options
-				};
-				if(idName !== '') cfg[idName] = idValue;
-
-				var icn3dui = new iCn3DUI(cfg);
-				//icn3dui.show3DStructure();
-
-				//communicate with the 3D viewer with chained functions
-				$.when(icn3dui.show3DStructure()).then(function() {
-					// add functions here
-					//icn3dui.updateHlAll();
-				});
-
-				window.icn3duiHash[divid] = icn3dui;
-			}
-
-			idProt = '{{ homology.idProt }}';
-			setupViewer('pdbid', idProt, 'div3DView');
-
-			//var command = "defined sets; select sets 4L03_A; color 87CEEB; style proteins cylinder and plate; select sets 6KDY_A; color FA8072; style proteins cylinder and plate; select sets 4L03_A or 6KDY_A; show selection; set background white; close popup";
-			//setupViewer('align', '4L03,6KDY', 'div3DView', command);
+			let idProt = '{{ homology.idProt }}';
+			setViewer_SingleElement(idProt);
+			//setViewer_ManyElements([['4L03','87CEEB'],['6KDY','FA8072']]);
+			//setViewer_ManyElements([['1LXA','87CEEB'],['1UBQ','FA8072']]);
 
 		}); // document ready
 
+		function setViewer_SingleElement(el) {
+			setupViewer('pdbid', el, 'div3DView');
+		}
+		function setViewer_ManyElements(els) {
+			if (els.length > 0) {
+				let idProts = '';
+				let command = 'defined sets; ';
+				els.forEach((el) => {
+					idProts += (idProts.length > 0 ? ',' : '') + el[0];
+					command += `select sets ${el[0]}_A; color ${el[1]}; style proteins cylinder and plate; `;
+				});
+				command += `select sets ${
+					els.reduce(
+						((str,e) => { 
+							return str + (str != '' ? ' or ' : '') + e[0] + '_A' 
+						}), '')
+				}; show selection; set background white; close popup`;
+
+				setupViewer('align', idProts, 'div3DView', command);
+			}
+		}
+
+		function setupViewer(idName, idValue, divid, command) {
+			var options = {};
+
+			// --Three Methods to modify the iCn3D view--
+			// --Modify iCn3D Method 1--: You can change the default options.
+			//Options are available at: https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d.html#DisplayOptions
+			options['chemicalbinding'] = 'show';
+
+			// --Modify iCn3D Method 2--: add commands, e.g., 'color spectrum'
+			command = (command) ? command : '';
+
+			var cfg = {
+				divid: divid,
+				width: 300,
+				height: 300,
+				mobilemenu: true,
+				showcommand: false,
+				showtitle: false,
+				command: command,
+				options: options
+			};
+			if(idName !== '') cfg[idName] = idValue;
+
+			var icn3dui = new iCn3DUI(cfg);
+			//icn3dui.show3DStructure();
+
+			//communicate with the 3D viewer with chained functions
+			$.when(icn3dui.show3DStructure()).then(function() {
+				// add functions here
+				//icn3dui.updateHlAll();
+			});
+
+			window.icn3duiHash[divid] = icn3dui;
+		}
 	</script>
 
 	<!-- log & Google Analytics -->
