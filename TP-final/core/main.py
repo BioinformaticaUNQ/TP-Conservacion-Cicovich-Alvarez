@@ -10,6 +10,6 @@ print(pdb.fetchFromPDB(PDB_ID))
 # Busca el pdbID en PDB y deja el fasta en seq.fasta
 print(blast.search(E_VALUE_REQUERIDO))
 # Levanta el seq y hace busqueda de similitud secuencial. Deja en clustal.fasta las secuencias homologas.
-clustal.align(False) # Si estas en windows cambia a True
+clustal.align()
 print("Alineamiento por Clustalw exitoso")
 conservation.calculateConservedZone(CONSERVATION_PORCENTAGE)
