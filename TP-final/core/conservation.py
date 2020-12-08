@@ -1,4 +1,8 @@
 from Bio import SeqIO
+import functools
+import operator
+
+foldr = lambda func, acc, xs: functools.reduce(lambda x, y: func(y, x), xs[::-1], acc)
 
 
 def getName(line):
@@ -83,4 +87,7 @@ def aminoOrMinus(pair, porcentage):
 
 def filterByConservationPorcentage(porcentage, matching):
     # Se puede usar para obtener la secuencia solo con los aminoacidos que cumplen el porcentaje de conservacion
-    return list(map(lambda pair: aminoOrMinus(pair, porcentage), matching))
+    ls = list(map(lambda pair: aminoOrMinus(pair, porcentage), matching))
+    return foldr(operator.add, '', ls)
+
+calculateConservedZone(80)
