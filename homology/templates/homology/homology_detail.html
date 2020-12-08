@@ -1,16 +1,41 @@
-<!DOCTYPE html><html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-	<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-	<meta name="description" content="iCn3D Structure Viewer">
-	<meta name="ncbi_app" content="structure">
-	<meta name="ncbi_pdid" content="icn3d">
-	<meta name="ncbi_page" content="example">
-	<meta name="ncbi_pinger_xml_http_request_override" content="false"/>
-	<script type="text/javascript">
-		window.ncbi_startTime = new Date();
+{% extends "base_generic.html" %}
+
+{% block references %}
+
+	<!-- START icn3d references -->
+	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.css">
+	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d_full_ui.css">
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery.min.js"></script>
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.js"></script>
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/three.min.js"></script>
+	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d_full_ui.min.js"></script>
+	<!-- END-->
+
+	{% load static %}
+	<!-- JQuery and JQuery-UI -->
+	<link rel="stylesheet" href="{% static 'references/JSAV/external/jquery.css' %}">
+	
+	<script type='text/javascript' src="{% static 'references/JSAV/external/jquery-1.10.2.min.js' %}"></script>
+	<script type='text/javascript' src="{% static 'references/JSAV/external/jquery-ui-1.10.4.custom.min.js' %}"></script>
+	
+	<!-- JSAV -->
+	<link rel="stylesheet" href="{% static 'references/JSAV/JSAV.css' %}" />
+	<script type='text/javascript' src="{% static 'references/JSAV/JSAV.js' %}"></script>
+
+	<!-- If using tooltipster -->
+	<link rel="stylesheet" href="{% static 'references/JSAV/external/tooltipster-master/css/tooltipster.css' %}" />
+	<script type='text/javascript' src="{% static 'references/JSAV/external/tooltipster-master/js/jquery.tooltipster.min.js' %}"></script>
+	<script>
+		function enableTooltipster()
+		{
+			$(document).ready(function() {
+				$('.tooltip').tooltipster();
+			});
+		}
+		enableTooltipster();
 	</script>
+	<!-- END -->
+	
 
 	<style type="text/css">
 		.gallery {float:left; padding: 5px; margin: 10px;}
@@ -18,13 +43,10 @@
 		body {font-family: Verdana, Arial, Helvetica, sans-serif;}
 	</style>
 
-</head>
-<body>
+{% endblock %}
 
-	
-	{% extends "base_generic.html" %}
 
-	{% block content %}
+{% block content %}
 
 	<h1><strong>ID:</strong> {{ homology.idProt }}</h1>
 	<p><strong>sequence:</strong> {{ homology.sequence }}</p>
@@ -36,12 +58,63 @@
 	<input type="button" onclick="setViewer_ManyElements([['4L03','87CEEB'],['6KDY','FA8072']]);" value="4L03 | 6KDY" />
 	<input type="button" onclick="setViewer_ManyElements([['2JF3','87CEEB'],['2AQ9','FA8072']]);" value="2JF3 | 2AQ9" />
 
-	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.css">
-	<link rel="stylesheet" href="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d_full_ui.css">
-	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery.min.js"></script>
-	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/jquery-ui.min.js"></script>
-	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/lib/three.min.js"></script>
-	<script src="https://www.ncbi.nlm.nih.gov/Structure/icn3d/icn3d_full_ui.min.js"></script>
+	<div id='sequenceDisplay'></div>
+	<script type='text/javascript'>
+		var MySeqs = [];
+		
+		MySeqs.push({ id :"id1b1.L",  sequence :"SASSSVNYMYACREFGHIKLMNPTRSTVWY"});
+		MySeqs.push({ id :"id1a.L",   sequence :"SASSSTNYMYACDEFGHIKLMNPQRSTVWY"});
+		MySeqs.push({ id :"id2b1.L",  sequence :"SASSTCNYMTACDEEGHIKLMNP-RSTCWY"});
+		MySeqs.push({ id :"id2a.L",   sequence :"SASSSCNYMTLCDEHGHIKLMNP-RSTCWY"});
+		MySeqs.push({ id :"id2a1.L",  sequence :"SASSSCNYMTLCDEHGHIKLMNPQRSTCWY"});
+		MySeqs.push({ id :"id1.L",    sequence :"SASSSVNYMYACDEFGHIKLMNPQRSTVWY"});
+		MySeqs.push({ id :"id1b.L",   sequence :"SASSSVNYMYACREFGHIKLMNPQRSTVWY"});
+		MySeqs.push({ id :"id1a1.L",  sequence :"SASSSTNYMYLCDEFGHIKLMNPQRSTVWY"});
+		MySeqs.push({ id :"id2.L",    sequence :"SASSSCNYMTACDEHGHIKLMNP-RSTCWY"});
+		MySeqs.push({ id :"id2b.L",   sequence :"SASSTCNYMTACDEHGHIKLMNP-RSTCWY"});
+	
+
+		function myAction(sequences)
+		{
+		   var seqString = "";
+		   for(var i=0; i<sequences.length; i++)
+		   {
+			   seqString += ">" + sequences[i].id + "\n";
+			   seqString += sequences[i].sequence + "\n";
+		   }
+		   alert(seqString);
+		}
+		
+		var MyOptions = Array();
+		MyOptions.sortable = true;
+		MyOptions.selectable = true;
+		MyOptions.deletable = true;
+		MyOptions.highlight = [3,5,10,14];
+		MyOptions.submit = "http://www.bioinf.org.uk/software/jsav/echo.cgi";
+		MyOptions.action = "myAction(MySeqs)";
+		MyOptions.actionLabel = "My Action";
+		MyOptions.toggleDotify = true;
+		MyOptions.toggleNocolour = true;
+		MyOptions.fasta = true;
+		MyOptions.consensus = true;
+		MyOptions.colourScheme = "zappo";
+		MyOptions.selectColour = true;
+		MyOptions.callback = "enableTooltipster";
+		MyOptions.idSubmit = "http://www.bioinf.org.uk/software/jsav/echo.cgi";
+		MyOptions.idSubmitKey = "seq";
+		MyOptions.idSubmitClean = true;
+		
+		function createArrayOfLen(x) {
+			return Array.from({length: x}, (_, i) => i + 1)
+		}
+		var labels = createArrayOfLen(MySeqs[0].sequence.length).map((e) => `L${e}`);
+		MyOptions.labels = labels;
+
+		// MyOptions.autoLabels = true;
+		
+		printJSAV('sequenceDisplay', MySeqs, MyOptions);
+	</script>
+
 
 	<script type="text/javascript">
 		$( document ).ready(function() {
@@ -85,8 +158,6 @@
 
 			let idProt = '{{ homology.idProt }}';
 			setViewer_SingleElement(idProt);
-			//setViewer_ManyElements([['4L03','87CEEB'],['6KDY','FA8072']]);
-			//setViewer_ManyElements([['1LXA','87CEEB'],['1UBQ','FA8072']]);
 
 		}); // document ready
 
@@ -152,11 +223,5 @@
 	<script type="text/javascript" src="https://www.ncbi.nlm.nih.gov/core/pinger/pinger.js"></script>
 
 	
-	{% endblock %}
-
-</body>
-
-</html>
-  
-  
+{% endblock %}
 
