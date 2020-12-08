@@ -7,7 +7,7 @@ def align():
     isWindows = platform.system().lower() == 'windows'
     if (isWindows):
         clustalw_exe = r'C:\Program Files (x86)\ClustalW2\clustalw2.exe'
-        fasta_file = os.path.join(os.getcwd(), 'TP-Final', 'core', 'SecuenciasCytocromoC.fasta')
+        fasta_file = os.path.join(os.getcwd(), 'tp_Final', 'core', 'SecuenciasCytocromoC.fasta')
         clustalw_cline = ClustalwCommandline(clustalw_exe, infile=fasta_file, outfile='aligned.fasta')
         assert os.path.isfile(clustalw_exe), "Clustal W executable missing"
         stdout, stderr = clustalw_cline()
