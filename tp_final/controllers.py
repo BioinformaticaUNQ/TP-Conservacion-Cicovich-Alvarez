@@ -5,10 +5,10 @@ from .core.clustal import getAlignment_flat
 from .core.conservation import getConservedZone_json
 
 def fasta(request, **kwargs: Any):
-    return JsonResponse({'sequence': getSequence(kwargs['pk'])})
+    return JsonResponse({'sequence': getSequence(kwargs['pID'])})
 
 def clustal(request, **kwargs: Any):
-    return JsonResponse({'alignment': getAlignment_flat(kwargs['pk'], 0.0000000000001)})
+    return JsonResponse({'alignment': getAlignment_flat(kwargs['pID'], float(kwargs['filterEValue']))})
 
 def conservation(request, **kwargs: Any):
-    return JsonResponse({'conservation': getConservedZone_json(kwargs['pk'], 0.0000000000001, 80)})
+    return JsonResponse({'conservation': getConservedZone_json(kwargs['pID'], float(kwargs['filterEValue']), kwargs['filterConservationPersentage'])})

@@ -1,9 +1,39 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h1>DIY Blog Home</h1>
+<h1>TP Final - Introducción a la Bioinformática</h1>
 
 <p>Welcome to <em>DIY Blog</em>, a very basic Django blogging website developed as an <a href="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/django_assessment_blog">assessment task</a> for the Django learning module on the Mozilla Developer Network.</p>
 
+
+<div class="container">
+	<div class="input-group mb-3">
+		<input type="text" class="form-control" id="pID" placeholder="PDB id">
+	</div>
+	<div class="input-group mb-3">
+		<input type="text" class="form-control" id="filterEValue" placeholder="E-Value filter">
+	</div>
+	<div class="input-group mb-3">
+		<input type="text" class="form-control" id="filterConservationPersentage" placeholder="Conservation persentage">
+	</div>
+	<button type="button" class="btn btn-primary" onclick="Request()">Request</button>
+</div>
+
+
+<script type='text/javascript'>
+	$( document ).ready(function() {
+		$('#pID').val('1LXA');
+		$('#filterEValue').val('1e-13');
+		$('#filterConservationPersentage').val('80');
+	});
+
+	function Request() {
+		let pID = $('#pID').val();
+		let filterEValue = $('#filterEValue').val();
+		let filterConservationPersentage = $('#filterConservationPersentage').val();
+		window.location.href = `/homology/detail/${pID}/${filterEValue}/${filterConservationPersentage}`;
+		//href="{% url 'homology-detail' pID='1LXA' filterEValue='1e-13' filterConservationPersentage=80 %}"
+	}
+</script>
 
 {% endblock %}

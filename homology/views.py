@@ -15,7 +15,7 @@ def index(request):
 
 def homologyDetailView(request, **kwargs: Any):
     context = {
-        'homology': Homology(kwargs['pk']),
+        'homology': Homology(kwargs['pID'], kwargs['filterEValue'], kwargs['filterConservationPersentage']),
     }
     return render(
         request, 

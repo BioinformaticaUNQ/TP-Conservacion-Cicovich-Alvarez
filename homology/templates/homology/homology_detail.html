@@ -79,6 +79,13 @@
 
 	<script type='text/javascript'>
 
+		var reqParams = {
+			idProt: "{{ homology.idProt }}",
+			sequence: "{{ homology.sequence }}",
+			filterEValue: "{{ homology.filterEValue }}",
+			filterConservationPersentage: "{{ homology.filterConservationPersentage }}"
+		};
+
 		function myAction(sequences)
 		{
 		   var seqString = "";
@@ -124,7 +131,7 @@
 			$("#sequenceDisplay").html('<h3>Loading alignment...</h3>');
 			$.ajax({
 				type: "GET",
-				url: `/clustal/1LXA`,
+				url: `/clustal/${reqParams.idProt}/${reqParams.filterEValue}`,
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
 				success(data) {
@@ -189,8 +196,7 @@
 
 			window.icn3duiHash = {};
 
-			let idProt = '{{ homology.idProt }}';
-			setViewer_SingleElement(idProt);
+			setViewer_SingleElement(reqParams.idProt);
 
 		}); // document ready
 
