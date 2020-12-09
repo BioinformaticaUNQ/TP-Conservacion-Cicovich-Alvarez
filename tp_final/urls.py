@@ -7,5 +7,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('homology/', include('homology.urls')),
     path('', RedirectView.as_view(url='/homology/', permanent=True)),
-    path('prueba/', controllers.prueba, name='prueba'),
+    path('fasta/<str:pk>', controllers.fasta, name='fasta'),
 ]

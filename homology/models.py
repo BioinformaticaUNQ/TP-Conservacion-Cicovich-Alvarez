@@ -1,4 +1,4 @@
-from tp_final.core.fastaCreator import getFasta
+from tp_final.core.fasta import getSequence
 
 class Homology():
     idProt = ''
@@ -6,7 +6,7 @@ class Homology():
     
     def __init__(self, idProt):
 	    self.idProt = idProt
-	    self.sequence = getFasta(idProt)
+	    self.sequence = getSequence(idProt)
 
     def __str__(self):
         return self.idProt

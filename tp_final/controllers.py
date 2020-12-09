@@ -1,5 +1,6 @@
 
+from typing import Any
 from django.http import JsonResponse
-from .core.fastaCreator import getFasta
-def prueba(request):
-    return JsonResponse({'sequence': getFasta('1LXA')})
+from .core.fasta import getSequence
+def fasta(request, **kwargs: Any):
+    return JsonResponse({'sequence': getSequence(kwargs['pk'])})

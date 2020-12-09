@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 biopython = "*"
 django = "*"
+requests = "*"
 
 [dev-packages]
 
