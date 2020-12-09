@@ -1,6 +1,6 @@
-from .utils import getRepositoryFilePath
 import requests
 import pathlib
+from .utils import getRepositoryFilePath
 
 def getFastaPath(pId):
     return getRepositoryFilePath(pId + '.fasta')
