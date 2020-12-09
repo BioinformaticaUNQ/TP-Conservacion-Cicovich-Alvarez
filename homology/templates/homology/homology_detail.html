@@ -48,51 +48,36 @@
 
 {% block content %}
 
-	<h1><strong>ID:</strong> {{ homology.idProt }}</h1>
-	<p><strong>sequence:</strong> {{ homology.sequence }}</p>
 
 	
-	<div id="div3DView" class="gallery"></div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-12 ">
 
-	<input type="button" onclick="setViewer_SingleElement('{{ homology.idProt }}');" value="{{ homology.idProt }}" />
-	<input type="button" onclick="setViewer_ManyElements([['4L03','87CEEB'],['6KDY','FA8072']]);" value="4L03 | 6KDY" />
-	<input type="button" onclick="setViewer_ManyElements([['2JF3','87CEEB'],['2AQ9','FA8072']]);" value="2JF3 | 2AQ9" />
+				<h1><strong>ID:</strong> {{ homology.idProt }}</h1>
+				<p><strong>sequence:</strong><span class="wrap"> {{ homology.sequence }}</span></p>
 
-	<div id='sequenceDisplay'></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-4">
+
+				<div id="div3DView" class="gallery"></div>
+				
+				<input type="button" onclick="setViewer_SingleElement('{{ homology.idProt }}');" value="{{ homology.idProt }}" />
+				<input type="button" onclick="setViewer_ManyElements([['4L03','87CEEB'],['6KDY','FA8072']]);" value="4L03 | 6KDY" />
+				<input type="button" onclick="setViewer_ManyElements([['2JF3','87CEEB'],['2AQ9','FA8072']]);" value="2JF3 | 2AQ9" />
+
+			</div>
+			<div class="col-sm-8">
+
+				<div id='sequenceDisplay'></div>
+
+			</div>
+		</div>
+	</div>
+
 	<script type='text/javascript'>
-		/*var MySeqs = [];
-		
-		MySeqs.push({ id :"id1b1.L",  sequence :"SASSSVNYMYACREFGHIKLMNPTRSTVWY"});
-		MySeqs.push({ id :"id1a.L",   sequence :"SASSSTNYMYACDEFGHIKLMNPQRSTVWY"});
-		MySeqs.push({ id :"id2b1.L",  sequence :"SASSTCNYMTACDEEGHIKLMNP-RSTCWY"});
-		MySeqs.push({ id :"id2a.L",   sequence :"SASSSCNYMTLCDEHGHIKLMNP-RSTCWY"});
-		MySeqs.push({ id :"id2a1.L",  sequence :"SASSSCNYMTLCDEHGHIKLMNPQRSTCWY"});
-		MySeqs.push({ id :"id1.L",    sequence :"SASSSVNYMYACDEFGHIKLMNPQRSTVWY"});
-		MySeqs.push({ id :"id1b.L",   sequence :"SASSSVNYMYACREFGHIKLMNPQRSTVWY"});
-		MySeqs.push({ id :"id1a1.L",  sequence :"SASSSTNYMYLCDEFGHIKLMNPQRSTVWY"});
-		MySeqs.push({ id :"id2.L",    sequence :"SASSSCNYMTACDEHGHIKLMNP-RSTCWY"});
-		MySeqs.push({ id :"id2b.L",   sequence :"SASSTCNYMTACDEHGHIKLMNP-RSTCWY"});*/
-
-		var MySeqs = [
-			{	id :"NP_061820.1_cytochrome_c_[Homo",
-				sequence :"---------MG--------------DVEKGKKIFIMKCSQCHTVEKGGKHKTGPNLHGLFGRKTGQAPGYSYTAANKNKG---IIWGEDTLMEYLENPKKYIPGTKMIFVGIKKKEERADLIAYLKKATNE"},
-			{ 	id :"bartmosca",
-				sequence :"---------MGS------------GDAENGKKIFVQKCAQCHTYEVGGKHKTGPNLHGLFGRKTGQAPGYSYTAANKNKG---IIWGEDTLMEYLENPKKYIPGTKMIFVGIKKKEERADLIAYLKKATNE"},
-			{ 	id :"NP_001285984.1_cytochrome_c_pr",
-				sequence :"---------MGV----PA------GDVEKGKKLFVQRCAQCHTVEAGGKHKVGPNLHGLIGRKTGQAAGFAYTDANKAKG---ITWNEDTLFEYLENPKKYIPGTKMIFAGLKKPNERGDLIAYLKSATK-"},
-			{ 	id :"KAE9612850.1_Cytochrome_c_[Lup",
-				sequence :"---------MASFDQAPP------GDAKVGEKIFKTKCAQCHTVDKGAGHKQGPNLNGLFGRQSGTTAGYSYSTANKNMA---VNWEEKTLYDYLLNPKKYIPGTKMVFPGLKKPQDRADLIAYLKESTAQ"},
-			{ 	id :"NP_001363126.1_cytochrome_c_[V",
-				sequence :"---------MASFDEAPP------GNSKSGEKIFKTKCAQCHTVDKGAGHKQGPNLNGLFGRQSGTTAGYSYSTANKNMA---VIWEEKTLYDYLLNPKKYIPGTKMVFPGLKKPQDRADLIAYLKESTA-"},
-			{ 	id :"QEE59979.1_cytochrome_c_[Betul",
-				sequence :"---------MASFDEAPP------GNPKVGEKIFKTKCAQCHTVEKGAGHKQGPNLNGLFGRQSGTTAGYSYSSANKNMA---VNWEEKTLYDYLLNPKKYIPGTKMVFPGLKKPQDRADLISYLKESTAS"},
-			{ 	id :"KAE8767936.1_Cytochrome_c_[Hor",
-				sequence :"---------MASFGEAPA------GNAAGGEKIFKTKCAQCHTVERDGAHKQGPNLSGLFGRQSGTTAGYAYSTANKNMA---VVWEENTLYDYLLNPKKYIPGTKMVFPGLKKPQERVDLIAYLKQSTA-"},
-			{ 	id :"CBJ31344.1_Cytochrome_c_[Ectoc",
-				sequence :"---------MS---------------TKAGAKIFKTKCSQCHTVEKDAGHKQGPNLNGLFGRTAGTVDGYSYSTANKTSG---VLWDESSLFDYLLAPKKYIKGTKMVFAGIKKPAERKELIAYLKEATAP"},
-			{ 	id :"WP_037127040.1_cytochrome_c_fa",
-				sequence :"MRNQILMIGLSAAVLCPIGALAQEGDAEAGAAIFK-KCATCHIVESDT-NKVGPSLKGLFGRKAGTHPDFSYSSAMKAAGEGGLVWDETTLRDYLHNPKAKVKGTKMAFVGVKKDDEITNLIAYLKQFP--"},
-		];
 
 		function myAction(sequences)
 		{
@@ -127,17 +112,45 @@
 		function createArrayOfLen(x) {
 			return Array.from({length: x}, (_, i) => i + 1)
 		}
-		var labels = createArrayOfLen(MySeqs[0].sequence.length).map((e) => `L${e}`);
-		MyOptions.labels = labels;
+		//var labels = createArrayOfLen(MySeqs[0].sequence.length).map((e) => `L${e}`);
+		//MyOptions.labels = labels;
 
 		// MyOptions.autoLabels = true;
 		
-		printJSAV('sequenceDisplay', MySeqs, MyOptions);
+		//printJSAV('sequenceDisplay', MySeqs, MyOptions);
+
+		
+		function getClustalAlignment() {
+			$("#sequenceDisplay").html('<h3>Loading alignment...</h3>');
+			$.ajax({
+				type: "GET",
+				url: `/clustal/1LXA`,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success(data) {
+					if (data) {
+						$("#sequenceDisplay").html('');
+						
+						let MySeqs = data.alignment; //[ {id: "", sequence: ""} ]
+						let labels = createArrayOfLen(MySeqs[0].sequence.length).map((e) => `L${e}`);
+						MyOptions.labels = labels;
+
+						printJSAV('sequenceDisplay', MySeqs, MyOptions);
+					}
+				},
+				error(error) {
+					console.error(error);
+					$("#sequenceDisplay").html('<h3>Error inesperado al buscar el alineamiento.</h3>');
+				}
+			});
+		}
 	</script>
 
 
 	<script type="text/javascript">
 		$( document ).ready(function() {
+			getClustalAlignment()
+
 			// --Modify iCn3D Method 3--: start modifying iCn3DUI and iCn3D =================================================================
 			iCn3DUI.prototype.setTools = function() {
 				var me = this, ic = me.icn3d; "use strict";
@@ -177,7 +190,7 @@
 			window.icn3duiHash = {};
 
 			let idProt = '{{ homology.idProt }}';
-			//setViewer_SingleElement(idProt);
+			setViewer_SingleElement(idProt);
 
 		}); // document ready
 

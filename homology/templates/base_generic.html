@@ -22,17 +22,15 @@
 <div class="container-fluid">
 
 <div class="row">
-  <div class="col-sm-2">
-  {% block sidebar %}
-  <ul class="sidebar-nav">
-    <li><a href="{% url 'index' %}">Home</a></li>
-    <li><a href="{% url 'homology-detail' pk='1LXA' %}">Request</a></li>
-  </ul>
-  
- 
-  {% endblock %}
+  <div class="col-sm-1">
+    {% block sidebar %}
+    <ul class="sidebar-nav">
+      <li><a href="{% url 'index' %}">Home</a></li>
+      <li><a href="{% url 'homology-detail' pk='1LXA' %}">Request</a></li>
+    </ul>
+    {% endblock %}
   </div>
-  <div class="col-sm-10 ">
+  <div class="col-sm-11 ">
   {% block content %}{% endblock %}
   
   {% block pagination %}
