@@ -1,6 +1,7 @@
 from Bio import SeqIO
 import functools
 import operator
+from .clustal import getClustalOutputPath
 
 foldr = lambda func, acc, xs: functools.reduce(lambda x, y: func(y, x), xs[::-1], acc)
 
@@ -31,8 +32,9 @@ def addToSeqs(line, seqs):
             seqs[getName(line)] = getSeq(line)
 
 
-def getSeqs():
-    filepath = 'aligned.fasta'
+def getSeqs(pId, E_VALUE_ESPERADO):
+    #filepath = 'aligned.fasta'
+    filepath = getClustalOutputPath(pId, E_VALUE_ESPERADO)
     seqs = {}
     fp = open(filepath)
     # Esto crea un map donde cada clave es el nombre y tiene como valor su secuencia ya alineada
@@ -59,14 +61,15 @@ def calculateConservation(inlineAminoacids):
     return maxx[0], round(maxx[1] / len(inlineAminoacids) * 100, 3)
 
 
-def calculateConservedZone(porcentage):
-    seqs = SeqIO.parse('aligned.fasta', 'clustal')
+def calculateConservedZone(pId, E_VALUE_ESPERADO, porcentage):
+    inputFile = getClustalOutputPath(pId, E_VALUE_ESPERADO)
+    seqs = SeqIO.parse(inputFile, 'clustal')
     original = next(seqs)
     matching = []
     i = 0
     for a in original:
         inlineAminoacids = [a]
-        for record in SeqIO.parse('aligned.fasta', 'clustal'):
+        for record in SeqIO.parse(inputFile, 'clustal'):
             inlineAminoacids.append(record.seq[i])
         i += 1
         matching.append(calculateConservation(inlineAminoacids))
@@ -90,4 +93,12 @@ def filterByConservationPorcentage(porcentage, matching):
     ls = list(map(lambda pair: aminoOrMinus(pair, porcentage), matching))
     return foldr(operator.add, '', ls)
 
-calculateConservedZone(80)
+
+def getConservedZone_json(pId, E_VALUE_ESPERADO, percentage):
+    conservation = calculateConservedZone(pId, E_VALUE_ESPERADO, percentage)
+    consensusFiltered = filterByConservationPorcentage(percentage, conservation)
+    return { "conservation": conservation, "filterPercentage": percentage, "consensusFiltered":consensusFiltered}
+
+if __name__ == '__main__':
+    #calculateConservedZone(80)
+    print(calculateConservedZone('1LXA', 0.0000000000001, 80))

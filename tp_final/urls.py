@@ -9,4 +9,5 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/homology/', permanent=True)),
     path('fasta/<str:pk>', controllers.fasta, name='fasta'),
     path('clustal/<str:pk>', controllers.clustal, name='clustal'),
+    path('conservation/<str:pk>', controllers.conservation, name='conservation'),
 ]
