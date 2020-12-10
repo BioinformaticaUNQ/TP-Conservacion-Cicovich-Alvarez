@@ -18,19 +18,23 @@ Por e
  Es obligatorio correr el archivo `dssp.py` luego de haber ejecutado `main.py`. Este programa nos mostrara la estructura secundaria consenso y la lista de pares (Estructura del aminoacido, porcentaje) en el mismo formato que `main.py`  
  
 
-## Comandos utiles
+## Instalacion
+
+Descargar una copia del proyecto en la direccion donde desee montar el servicio.
+Ejecutar en consola los siguientes comandos para instalar las dependencias:
 
 ```bash
 pip install pipenv #Instalar PipEnv
+sudo apt-get install dssp #Instalar DSSP
+sudo apt-get install clustalw #Instalar clustalw
 ```
+
+## Ejecucion
+
+Abrir una ventana de terminal ubicada en el root del proyecto y correr los siguentes comandos:
+
 ```bash
 pipenv shell #Montar ambiente
-```
-```bash
-pipenv update #Actualizar dependencias
-```
-```bash
-pipenv install biopython #Montar agregar dependencia
 ```
 ```bash
 pipenv run py manage.py runserver #Iniciar django desde pipenv
