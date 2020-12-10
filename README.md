@@ -1,21 +1,32 @@
 # Graficador de zonas conservadas de proteínas
 
-## Backend
+## Informacion de proyecto
 
-Las rutas estan ubicadas en el archivo `urls.py`. Alli se encuentran los endpoints necesarios para utilizar el programa desde el frontend.
-Por e
+El proyecto esta desarrollado en Django con la intención de publicar un sitio que pueda ser consumido en una red interna desde cualquier navegador. El uso de esta herramienta también nos da la posibilidad de usar Python para desarrollar la lógica del back-end. A la par, utilizamos Pipenv para el manejo de dependencias del proyecto.
+A continuación se detallan algunas dependencias del proyecto:
+* Back-end:
+  * django
+  * biopython
+  * Clustal
+  * DSSP
+* Front-end:
+  * [iCn3D](https://github.com/ncbi/icn3d)
+  * [JSAV](https://github.com/AndrewCRMartin/JSAV)
 
-## `main.py`
- El archivo `main.py` contiene los pasos necesarios para generar las zonas conservadas de una proteína y viene configurado con un ejemplo.
+## Logica de procesamiento
+La logica definida para procesar y obtener la informacion necesaria del proyecto se podra encontrar en la carpeta `./tp_final/core/`. 
+
+### `main.py`
+ El archivo `main.py` contiene los pasos necesarios para generar las zonas conservadas de una proteína sin necesidad de montar el proyecto en django.
  Se pueden modificar los parametros: PDB_ID, e-value maximo, porcentaje de conservación para la secuencia consenso.
  
  Con solo correrlo el programa descargará los archivos necesarios de Blast, Clustal y PDB para poder hacer las comparaciones.
- Todos los archivos serán alojados en una carpeta `repository`.
+ Todos los archivos serán alojados en una carpeta `repository` en el root del proyecto.
  El programa `main` imprimirá por consola los resultados, primero una lista de tuplas (Aminoacido, porcentaje) donde se mostrará el porcentaje de conservación del aminoacido con mas apariciones.
  Tambien se verá la secuencia consenso que supere el valor porcentual que se ingreso.
  
- ## `dssp.py`
- Es obligatorio correr el archivo `dssp.py` luego de haber ejecutado `main.py`. Este programa nos mostrara la estructura secundaria consenso y la lista de pares (Estructura del aminoacido, porcentaje) en el mismo formato que `main.py`  
+ ### `dssp.py`
+ Es necesario correr el archivo `dssp.py` luego de haber ejecutado `main.py`. Este programa nos mostrara la estructura secundaria consenso y la lista de pares (Estructura del aminoacido, porcentaje) en el mismo formato que `main.py`  
  
 
 ## Instalacion
@@ -39,3 +50,12 @@ pipenv shell #Montar ambiente
 ```bash
 pipenv run py manage.py runserver #Iniciar django desde pipenv
 ```
+
+## Uso de la herramienta
+
+Una vez montado el servicio, ingresar a la pagina http://127.0.0.1:8000/ donde será redirigido a un formulario con los parametros necesarios para realizar el procesamiento:
+* PDB id
+* E-Value limite
+* limite de conservacion de aminoacido/estructura
+
+Una vez completada esta informacion, presionar el boton `Request` para que se muestre la informacion obtenida y procesada de la estructura y conservacion de las proteinas homologas.
