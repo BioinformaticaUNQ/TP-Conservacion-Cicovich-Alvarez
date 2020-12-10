@@ -41,6 +41,17 @@
 		.gallery {float:left; padding: 5px; margin: 10px;}
 
 		body {font-family: Verdana, Arial, Helvetica, sans-serif;}
+
+		.nonBreak {
+			overflow-x: auto;
+			display: flex;
+		}
+
+		.nonBreak p {
+			font-family:'Lucida Console', monospace;
+			white-space: pre;
+		}
+
 	</style>
 
 {% endblock %}
@@ -54,20 +65,31 @@
 		<div class="row">
 			<div class="col-sm-12 ">
 
-				<h1><strong>ID:</strong> {{ homology.idProt }}</h1>
-				<p><strong>sequence:</strong><span class="wrap"> {{ homology.sequence }}</span></p>
+				<div class="row">
+					<h1><strong>ID:</strong> {{ homology.idProt }}</h1>
+				</div>
+				<div class="row">
+					<div class="col-sm-1 ">
+						<strong>sequence:</strong>
+					</div>
+					<div class="col-sm-11 ">
+						<div class="nonBreak">
+							<p>{{ homology.sequence }}</p>
+						</div>
+					</div>
+				</div>
 
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-sm-4">
 
-				<div id="div3DView" class="gallery"></div>
-				
-				<input type="button" onclick="setViewer_SingleElement('{{ homology.idProt }}');" value="{{ homology.idProt }}" />
-				<input type="button" onclick="setViewer_ManyElements([['4L03','87CEEB'],['6KDY','FA8072']]);" value="4L03 | 6KDY" />
-				<input type="button" onclick="setViewer_ManyElements([['2JF3','87CEEB'],['2AQ9','FA8072']]);" value="2JF3 | 2AQ9" />
-
+				<div class="row">
+					<div id="div3DView" class="gallery"></div>
+				</div>
+				<div class="row">
+					<div id="divCmb3dViewSelector"></div>
+				</div>
 			</div>
 			<div class="col-sm-8">
 
@@ -75,9 +97,38 @@
 
 			</div>
 		</div>
+		<div class="row">
+			<div class="col-sm-2 ">
+				<strong>Conservation 1º:</strong>
+			</div>
+			<div class="col-sm-10 ">
+				<div class="nonBreak">
+					<p><span id="pConservation1" ></span></p>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2 ">
+				<strong>Conservation 2º:</strong>
+			</div>
+			<div class="col-sm-10 ">
+				<div class="nonBreak">
+					<p><span id="pConservation2" ></span></p>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<script type='text/javascript'>
+
+		$( document ).ready(function() {
+			getConservation_1();
+			getConservation_2();
+			getClustalAlignment();
+			configure_iCn3D();
+
+			setViewer_SingleElement(reqParams.idProt);
+		});
 
 		var reqParams = {
 			idProt: "{{ homology.idProt }}",
@@ -126,6 +177,55 @@
 		
 		//printJSAV('sequenceDisplay', MySeqs, MyOptions);
 
+		function getConservation_1() {
+			$("#pConservation1").html('<h3>Loading...</h3>');
+			$.ajax({
+				type: "GET",
+				url: `/conservation/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage}`,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success(data) {
+					if (data) {
+						let consensusFiltered = data.conservation.consensusFiltered;
+						let consensusSequence = data.conservation.conservation.reduce(((str,e) => str + e[0]), '')
+						let consensusPercentage = data.conservation.conservation.map((e) => e[1]);
+						
+						$('#pConservation1').html(
+							consensusSequence + "\n" +
+							consensusFiltered);
+					}
+				},
+				error(error) {
+					console.error(error);
+					$("#pConservation1").html('<h3>Error inesperado al calcular la conservacion.</h3>');
+				}
+			});
+		}
+		
+		function getConservation_2() {
+			$("#pConservation2").html('<h3>Loading...</h3>');
+			$.ajax({
+				type: "GET",
+				url: `/conservation2/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage}`,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				success(data) {
+					if (data) {
+						let consensusFiltered = data.conservation.consensusFiltered;
+						let consensusSequence = data.conservation.conservation.reduce(((str,e) => str + e[0]), '')
+						let consensusPercentage = data.conservation.conservation.map((e) => e[1]);
+						
+						$('#pConservation2').html(
+							consensusSequence + "\n" +
+							consensusFiltered);
+					}
+				},
+				error(error) {
+					console.error(error);
+					$("#pConservation2").html('<h3>Error inesperado al calcular la conservacion.</h3>');
+				}
+			});
+		}
 		
 		function getClustalAlignment() {
 			$("#sequenceDisplay").html('<h3>Loading alignment...</h3>');
@@ -143,6 +243,13 @@
 						MyOptions.labels = labels;
 
 						printJSAV('sequenceDisplay', MySeqs, MyOptions);
+						
+						let pIdHomo = data.alignment.map((e) => e.id.split('|')[2]).filter((e) => e != reqParams.idProt);
+						$('#divCmb3dViewSelector').html(`
+						<select id="cmb3dViewSelector" onchange="cmb3dViewSelector_onChange()">
+							<option value="${reqParams.idProt}" selected="selected">${reqParams.idProt}</option>
+							${pIdHomo.reduce(((str,e) => str + `<option value="${reqParams.idProt}|${e}">${reqParams.idProt} | ${e}</option>`), '')}
+						</select>`);
 					}
 				},
 				error(error) {
@@ -151,13 +258,41 @@
 				}
 			});
 		}
-	</script>
+		
+		function cmb3dViewSelector_onChange() {
+			pIDs = $('#cmb3dViewSelector').val().split('|');
+			if (pIDs.length == 2)
+				setViewer_ManyElements([[pIDs[0],'87CEEB'],[pIDs[1],'FA8072']]);
+			else
+				setViewer_SingleElement(pIDs[0]);
+		}
 
 
-	<script type="text/javascript">
-		$( document ).ready(function() {
-			getClustalAlignment()
 
+		function setViewer_SingleElement(el) {
+			setupViewer('pdbid', el, 'div3DView');
+		}
+		function setViewer_ManyElements(els) {
+			if (els.length > 0) {
+				let idProts = '';
+				let command = 'defined sets; ';
+				els.forEach((el) => {
+					idProts += (idProts.length > 0 ? ',' : '') + el[0];
+					command += `select sets ${el[0]}_A; color ${el[1]}; style proteins cylinder and plate; `;
+				});
+				command += `select sets ${
+					els.reduce(
+						((str,e) => { 
+							return str + (str != '' ? ' or ' : '') + e[0] + '_A' 
+						}), '')
+				}; show selection; set background white; close popup`;
+
+				setupViewer('align', idProts, 'div3DView', command);
+			}
+		}
+
+		function configure_iCn3D() {
+			
 			// --Modify iCn3D Method 3--: start modifying iCn3DUI and iCn3D =================================================================
 			iCn3DUI.prototype.setTools = function() {
 				var me = this, ic = me.icn3d; "use strict";
@@ -195,31 +330,6 @@
 			// end modifying iCn3D ============================================================
 
 			window.icn3duiHash = {};
-
-			setViewer_SingleElement(reqParams.idProt);
-
-		}); // document ready
-
-		function setViewer_SingleElement(el) {
-			setupViewer('pdbid', el, 'div3DView');
-		}
-		function setViewer_ManyElements(els) {
-			if (els.length > 0) {
-				let idProts = '';
-				let command = 'defined sets; ';
-				els.forEach((el) => {
-					idProts += (idProts.length > 0 ? ',' : '') + el[0];
-					command += `select sets ${el[0]}_A; color ${el[1]}; style proteins cylinder and plate; `;
-				});
-				command += `select sets ${
-					els.reduce(
-						((str,e) => { 
-							return str + (str != '' ? ' or ' : '') + e[0] + '_A' 
-						}), '')
-				}; show selection; set background white; close popup`;
-
-				setupViewer('align', idProts, 'div3DView', command);
-			}
 		}
 
 		function setupViewer(idName, idValue, divid, command) {
