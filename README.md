@@ -1,15 +1,23 @@
 # Graficador de zonas conservadas de proteínas
 
-## Resumen
+## Backend
 
-El programa recibe como input un `PDB_ID` (1LXA por ejemplo) que será utilizado para traer un archivo llamado `seq.fasta`, luego busca por similitud secuencial en la base de datos de PDB, el resultado se alojará en `clustal.fasta`.
-Estas secuencias seran filtradas por el parametro `E_VALUE_REQUIRED`, las busquedas que superen ese valor no seran consideradas a la hora de alinear.
-En ese momento se utilizara el programa `clustalw` de la linea de comando de linux o windows (indicar su correspondiente path) y escribirá un archivo `aligned.fasta `. Se ejecutará un algoritmo para determinar las zonas conservadas.
-Este algoritmo utiliza un valor procentual parametrizable llamado `CONSERVATION_PORCENTAGE`. Este parametro indica el porcentaje minimo requerido de apariciones de un aminoacido para pertenecer a la secuencia consenso.
-En el caso de que una columna de aminoácidos tenga mas gaps (-) que aminoacidos, se considerarán solo residuos para calcular el porcentaje.
+Las rutas estan ubicadas en el archivo `urls.py`. Alli se encuentran los endpoints necesarios para utilizar el programa desde el frontend.
+Por e
 
-
+## `main.py`
+ El archivo `main.py` contiene los pasos necesarios para generar las zonas conservadas de una proteína y viene configurado con un ejemplo.
+ Se pueden modificar los parametros: PDB_ID, e-value maximo, porcentaje de conservación para la secuencia consenso.
  
+ Con solo correrlo el programa descargará los archivos necesarios de Blast, Clustal y PDB para poder hacer las comparaciones.
+ Todos los archivos serán alojados en una carpeta `repository`.
+ El programa `main` imprimirá por consola los resultados, primero una lista de tuplas (Aminoacido, porcentaje) donde se mostrará el porcentaje de conservación del aminoacido con mas apariciones.
+ Tambien se verá la secuencia consenso que supere el valor porcentual que se ingreso.
+ 
+ ## `dssp.py`
+ Es obligatorio correr el archivo `dssp.py` luego de haber ejecutado `main.py`. Este programa nos mostrara la estructura secundaria consenso y la lista de pares (Estructura del aminoacido, porcentaje) en el mismo formato que `main.py`  
+ 
+
 ## Comandos utiles
 
 ```bash

@@ -10,4 +10,5 @@ urlpatterns = [
     path('fasta/<str:pID>', controllers.fasta, name='fasta'),
     path('clustal/<str:pID>/<str:filterEValue>', controllers.clustal, name='clustal'),
     path('conservation/<str:pID>/<str:filterEValue>/<int:filterConservationPersentage>', controllers.conservation, name='conservation'),
+    path('conservation2/<str:pID>/<str:filterEValue>/<int:filterConservationPersentage>', controllers.conservation2, name='conservation2'),
 ]

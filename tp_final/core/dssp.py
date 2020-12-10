@@ -3,8 +3,7 @@ from Bio.PDB import PDBParser
 from Bio.PDB.DSSP import DSSP
 import operator
 import time
-import pdb
-from tp_final.core import conservation
+from tp_final.core import conservation, clustal, pdb
 
 
 def fillWithGaps(seq, st):
@@ -15,17 +14,18 @@ def fillWithGaps(seq, st):
         if (a == '-'):
             res = res + '-'
         else:
-            if(len(structure) > 0):
+            if (len(structure) > 0):
                 res = res + structure[0]
                 structure = structure[1:]
     return res
 
+
 def getSecondaryStructure(pdbID):
     pdb.fetchInPDBFormat(pdbID)
     p = PDBParser()
-    structure = p.get_structure(pdbID, "seq.pdb")
+    structure = p.get_structure(pdbID, pdb.getTemporaryPDBPath())
     model = structure[0]
-    dssp = DSSP(model, "seq.pdb")
+    dssp = DSSP(model, pdb.getTemporaryPDBPath())
     seq = ""
     secStructure = ""
     for key in dssp.keys():
@@ -51,6 +51,7 @@ def calculateConservation(inlineStructures):
             maxx = (key, value)
     return maxx[0], round(maxx[1] / len(inlineStructures) * 100, 3)
 
+
 def calculateConservedZone(structures):
     res = []
     first = structures[0]
@@ -65,12 +66,12 @@ def calculateConservedZone(structures):
     return res
 
 
-def calculateSecondaryStructureConservation():
+def calculateSecondaryStructureConservation(pdbId, E_VALUE):
     structures = []
-    for record in SeqIO.parse('aligned.fasta', 'clustal'):
+    for record in SeqIO.parse(clustal.getClustalOutputPath(pdbId, E_VALUE), 'clustal'):
         gapped = fillWithGaps(record.seq, getSecondaryStructure(record.id[5:9]))
         structures.append(gapped)
-        time.sleep(1)
+        time.sleep(0.5)
     return calculateConservedZone(structures)
 
 
@@ -79,5 +80,12 @@ def filterByConservationPorcentage(porcentage, matching):
     ls = list(map(lambda pair: conservation.aminoOrMinus(pair, porcentage), matching))
     return conservation.foldr(operator.add, '', ls)
 
+
+def calculateSecondaryStructureConservation_json(pdbId, E_VALUE, percentage):
+    conservation = calculateSecondaryStructureConservation(pdbId, E_VALUE)
+    consensusFiltered = filterByConservationPorcentage(percentage, conservation)
+    return {"conservation": conservation, "filterPercentage": percentage, "consensusFiltered": consensusFiltered}
+
+
 if __name__ == '__main__':
-    print(filterByConservationPorcentage(80,calculateSecondaryStructureConservation()))
+    print(filterByConservationPorcentage(80, calculateSecondaryStructureConservation('1LXA', 0.0000000000001)))
