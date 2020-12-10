@@ -53,6 +53,15 @@
 			margin: 0;
 		}
 
+		.JSAV .tooltip , .JSAVControls .tooltip {
+			position: revert;
+			display: revert;
+			opacity: revert;
+		}
+		.JSAVControls , div.JSAVControls > span > p {
+			margin: 0;
+		}
+
 	</style>
 
 {% endblock %}
@@ -161,7 +170,7 @@
 		MyOptions.toggleNocolour = true;
 		MyOptions.fasta = true;
 		MyOptions.consensus = true;
-		MyOptions.colourScheme = "zappo";
+		MyOptions.colourScheme = "clustal";
 		MyOptions.selectColour = true;
 		MyOptions.callback = "enableTooltipster";
 		MyOptions.idSubmit = "http://www.bioinf.org.uk/software/jsav/echo.cgi";
@@ -250,6 +259,7 @@
 						MyOptions.labels = labels;
 
 						printJSAV('sequenceDisplay', MySeqs, MyOptions);
+						$('#sequenceDisplay').css("width", "revert");
 						
 						let pIdHomo = data.alignment.map((e) => e.id.split('|')[2]).filter((e) => e != reqParams.idProt);
 						$('#divCmb3dViewSelector').html(`
