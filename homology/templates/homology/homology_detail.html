@@ -254,7 +254,10 @@
 					if (data) {
 						$("#sequenceDisplay").html('');
 						
-						let MySeqs = data.alignment; //[ {id: "", sequence: ""} ]
+						//let MySeqs = [ {id: "", sequence: ""} ]
+						let MySeqs = data.alignment
+							.map((e) => ({id: e.id.substring(1,9), sequence: e.sequence}))
+							.sort((a, b) => (a.id.includes(reqParams.idProt) ? -1 : 1));
 						let labels = createArrayOfLen(MySeqs[0].sequence.length).map((e) => `L${e}`);
 						MyOptions.labels = labels;
 
