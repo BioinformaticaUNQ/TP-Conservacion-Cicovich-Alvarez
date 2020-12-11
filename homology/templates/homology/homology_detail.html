@@ -97,9 +97,6 @@
 				<div class="row">
 					<div id="div3DView" class="gallery_bak"></div>
 				</div>
-				<div class="row">
-					<div id="divCmb3dViewSelector"></div>
-				</div>
 			</div>
 			<div class="col-sm-8">
 
@@ -147,35 +144,24 @@
 			filterConservationPersentage: "{{ homology.filterConservationPersentage }}"
 		};
 
-		function myAction(sequences)
-		{
-		   var seqString = "";
-		   for(var i=0; i<sequences.length; i++)
-		   {
-			   seqString += ">" + sequences[i].id + "\n";
-			   seqString += sequences[i].sequence + "\n";
-		   }
-		   alert(seqString);
-		}
-		
 		var MyOptions = Array();
 		MyOptions.sortable = true;
 		MyOptions.selectable = true;
 		MyOptions.deletable = true;
 		MyOptions.highlight = [3,5,10,14];
-		MyOptions.submit = "http://www.bioinf.org.uk/software/jsav/echo.cgi";
-		MyOptions.action = "myAction(MySeqs)";
-		MyOptions.actionLabel = "My Action";
+		//MyOptions.submit = "http://www.bioinf.org.uk/software/jsav/echo.cgi";
+		//MyOptions.action = "myAction(MySeqs)";
+		//MyOptions.actionLabel = "My Action";
 		MyOptions.toggleDotify = true;
 		MyOptions.toggleNocolour = true;
-		MyOptions.fasta = true;
+		MyOptions.fasta = false;
 		MyOptions.consensus = true;
 		MyOptions.colourScheme = "clustal";
 		MyOptions.selectColour = true;
 		MyOptions.callback = "enableTooltipster";
-		MyOptions.idSubmit = "http://www.bioinf.org.uk/software/jsav/echo.cgi";
-		MyOptions.idSubmitKey = "seq";
-		MyOptions.idSubmitClean = true;
+		MyOptions.idSubmit = "";//"http://www.bioinf.org.uk/software/jsav/echo.cgi";
+		//MyOptions.idSubmitKey = "seq";
+		//MyOptions.idSubmitClean = true;
 		
 		function createArrayOfLen(x) {
 			return Array.from({length: x}, (_, i) => i + 1)
@@ -263,6 +249,12 @@
 
 						printJSAV('sequenceDisplay', MySeqs, MyOptions);
 						$('#sequenceDisplay').css("width", "revert");
+						$('div.JSAV > .outerseqtable > .seqtable > table > tbody > tr.seqrow > td.idCell > a')
+							.each((i,e) => {
+								let pID = $(e).parent().parent().attr("id").split('|')[1];
+								$(e).removeAttr("href");
+								$(e).attr("onclick",`set3dViewerIDs("${reqParams.idProt + (reqParams.idProt != pID ? '|' + pID : '' )}")`);
+							});
 						
 						let pIdHomo = data.alignment.map((e) => e.id.split('|')[2]).filter((e) => e != reqParams.idProt);
 						$('#divCmb3dViewSelector').html(`
@@ -279,10 +271,10 @@
 			});
 		}
 		
-		function cmb3dViewSelector_onChange() {
-			pIDs = $('#cmb3dViewSelector').val().split('|');
+		function set3dViewerIDs(pIDs) {
+			pIDs = pIDs.split('|');
 			if (pIDs.length == 2)
-				setViewer_ManyElements([[pIDs[0],'87CEEB'],[pIDs[1],'FA8072']]);
+				setViewer_ManyElements([[pIDs[0],'9C27B0'],[pIDs[1],'FA8072']]);
 			else
 				setViewer_SingleElement(pIDs[0]);
 		}
