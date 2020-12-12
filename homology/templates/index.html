@@ -7,16 +7,49 @@
 
 
 <div class="container">
-	<div class="input-group mb-3">
-		<input type="text" class="form-control" id="pID" placeholder="PDB id">
+	<div class="mb-8">
+		<div class="row">
+			<div class="col-sm-2 ">
+				<strong>PDB Id:</strong>
+			</div>
+			<div class="col-sm-2 ">
+				<input type="text" class="form-control" id="pID" placeholder="PDB id" style="text-transform: uppercase" maxlength="4">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2 ">
+				<strong>E-Value limite:</strong>
+			</div>
+			<div class="col-sm-2 ">
+				<input type="text" class="form-control" id="filterEValue" placeholder="E-Value filter">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2 ">
+				<strong>Conservacion:<br>(estructura&nbsp;1º)</strong>
+			</div>
+			<div class="col-sm-2 ">
+				<div class="input-group">
+					<input type="number" class="form-control" id="filterConservationPersentage1" placeholder="Conservation persentage">
+					<div class="input-group-addon">%</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-2 ">
+				<strong>Conservacion:<br>(estructura&nbsp;2º)</strong>
+			</div>
+			<div class="col-sm-2 ">
+				<div class="input-group">
+					<input type="number" class="form-control" id="filterConservationPersentage2" placeholder="Conservation persentage">
+					<div class="input-group-addon">%</div>
+				</div>
+			</div>
+		</div>
+		<div class="row" style="text-align: center;">
+			<button type="button" class="btn btn-primary" onclick="Request()">Procesar</button>
+		</div>
 	</div>
-	<div class="input-group mb-3">
-		<input type="text" class="form-control" id="filterEValue" placeholder="E-Value filter">
-	</div>
-	<div class="input-group mb-3">
-		<input type="text" class="form-control" id="filterConservationPersentage" placeholder="Conservation persentage">
-	</div>
-	<button type="button" class="btn btn-primary" onclick="Request()">Procesar</button>
 </div>
 
 
@@ -24,15 +57,39 @@
 	$( document ).ready(function() {
 		$('#pID').val('1LXA');
 		$('#filterEValue').val('1e-13');
-		$('#filterConservationPersentage').val('80');
+		$('#filterConservationPersentage1').val('80');
+		$('#filterConservationPersentage2').val('80');
 	});
 
 	function Request() {
-		let pID = $('#pID').val();
+		let pID = $('#pID').val().toUpperCase();
 		let filterEValue = $('#filterEValue').val();
-		let filterConservationPersentage = $('#filterConservationPersentage').val();
-		window.location.href = `/homology/detail/${pID}/${filterEValue}/${filterConservationPersentage}`;
-		//href="{% url 'homology-detail' pID='1LXA' filterEValue='1e-13' filterConservationPersentage=80 %}"
+		let filterConservationPersentage1 = $('#filterConservationPersentage1').val();
+		let filterConservationPersentage2 = $('#filterConservationPersentage2').val();
+
+		if (pID.length != 4) {
+			alert("Ingrese un ID de 4 caracteres!!");
+			$('#pID').focus();
+			return;
+		}
+		if (!parseFloat(filterEValue)) {
+			alert("El e-value debe ser un valor numerico.\nEj: 0.001 ó 1e-13");
+			$('#filterEValue').focus();
+			return;
+		}
+		filterEValue = parseFloat(filterEValue).toString()
+		if (filterConservationPersentage1 < 0 || filterConservationPersentage1 > 100) {
+			alert("El valor debe encontrarse entre 0 y 100.");
+			$('#filterConservationPersentage1').focus();
+			return;
+		}
+		if (filterConservationPersentage2 < 0 || filterConservationPersentage2 > 100) {
+			alert("El valor debe encontrarse entre 0 y 100.");
+			$('#filterConservationPersentage2').focus();
+			return;
+		}
+
+		window.location.href = `/homology/detail/${pID}/${filterEValue}/${filterConservationPersentage1}/${filterConservationPersentage2}`;
 	}
 </script>
 

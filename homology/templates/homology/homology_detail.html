@@ -141,7 +141,8 @@
 			idProt: "{{ homology.idProt }}",
 			sequence: "{{ homology.sequence }}",
 			filterEValue: "{{ homology.filterEValue }}",
-			filterConservationPersentage: "{{ homology.filterConservationPersentage }}"
+			filterConservationPersentage1: "{{ homology.filterConservationPersentage1 }}",
+			filterConservationPersentage2: "{{ homology.filterConservationPersentage2 }}"
 		};
 
 		var MyOptions = Array();
@@ -177,7 +178,7 @@
 			$("#pConservation1").html('<h3>Loading...</h3>');
 			$.ajax({
 				type: "GET",
-				url: `/conservation/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage}`,
+				url: `/conservation/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage1}`,
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
 				success(data) {
@@ -205,7 +206,7 @@
 			$("#pConservation2").html('<h3>Loading...</h3>');
 			$.ajax({
 				type: "GET",
-				url: `/conservation2/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage}`,
+				url: `/conservation2/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage2}`,
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
 				success(data) {
