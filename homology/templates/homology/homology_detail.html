@@ -4,20 +4,11 @@
 
 	{% load static %}
 	<!-- START icn3d references -->
-	<link rel="stylesheet" href="{% static 'references/icn3d/lib/jquery-ui.min.css' %}">
 	<link rel="stylesheet" href="{% static 'references/icn3d/icn3d_full_ui.css' %}">
-	<script type='text/javascript' src="{% static 'references/icn3d/lib/jquery.min.js' %}"></script>
-	<script type='text/javascript' src="{% static 'references/icn3d/lib/jquery-ui.min.js' %}"></script>
 	<script type='text/javascript' src="{% static 'references/icn3d/lib/three.min.js' %}"></script>
 	<script type='text/javascript' src="{% static 'references/icn3d/icn3d_full_ui.min.js' %}"></script>
 	<!-- END-->
 
-	<!-- JQuery and JQuery-UI -->
-	<link rel="stylesheet" href="{% static 'references/JSAV/external/jquery.css' %}">
-	
-	<script type='text/javascript' src="{% static 'references/JSAV/external/jquery-1.10.2.min.js' %}"></script>
-	<script type='text/javascript' src="{% static 'references/JSAV/external/jquery-ui-1.10.4.custom.min.js' %}"></script>
-	
 	<!-- JSAV -->
 	<link rel="stylesheet" href="{% static 'references/JSAV/JSAV.css' %}" />
 	<script type='text/javascript' src="{% static 'references/JSAV/JSAV.js' %}"></script>
@@ -129,12 +120,28 @@
 	<script type='text/javascript'>
 
 		$( document ).ready(function() {
-			getConservation_1();
-			getConservation_2();
-			getClustalAlignment();
+			getClustalAlignment(successCallback = () => {
+				getConservation_1(successCallback = () => {
+					getConservation_2();
+				});
+			});
+			
 			configure_iCn3D();
 
 			setViewer_SingleElement(reqParams.idProt);
+		});
+		
+		/* 
+		* Modifico la funcion del link en los enlaces con el PSB Id para que cambie la vista del componente 3d.
+		*/
+		$('body').on('DOMNodeInserted', 'div.JSAV', 
+		(evt) => {
+			$(evt.target).find('.outerseqtable > .seqtable > table > tbody > tr.seqrow > td.idCell > a')
+				.each((i,e) => {
+					let pID = $(e).parent().parent().attr("id").split('|')[1];
+					$(e).removeAttr("href");
+					$(e).attr("onclick",`set3dViewerIDs("${reqParams.idProt + (reqParams.idProt != pID ? '|' + pID : '' )}")`);
+				});
 		});
 
 		var reqParams = {
@@ -174,9 +181,9 @@
 		
 		//printJSAV('sequenceDisplay', MySeqs, MyOptions);
 
-		function getConservation_1() {
+		function getConservation_1(successCallback) {
 			$("#pConservation1").html('<h3>Loading...</h3>');
-			$.ajax({
+			return $.ajax({
 				type: "GET",
 				url: `/conservation/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage1}`,
 				contentType: "application/json; charset=utf-8",
@@ -193,6 +200,8 @@
 							consensusSequence + "\n" +
 							consensusFiltered + "\n" +
 							consensusPercentage);
+
+						successCallback();
 					}
 				},
 				error(error) {
@@ -202,9 +211,9 @@
 			});
 		}
 		
-		function getConservation_2() {
+		function getConservation_2(successCallback) {
 			$("#pConservation2").html('<h3>Loading...</h3>');
-			$.ajax({
+			return $.ajax({
 				type: "GET",
 				url: `/conservation2/${reqParams.idProt}/${reqParams.filterEValue}/${reqParams.filterConservationPersentage2}`,
 				contentType: "application/json; charset=utf-8",
@@ -221,6 +230,8 @@
 							consensusSequence + "\n" +
 							consensusFiltered + "\n" +
 							consensusPercentage);
+						
+						successCallback();
 					}
 				},
 				error(error) {
@@ -232,7 +243,7 @@
 		
 		function getClustalAlignment() {
 			$("#sequenceDisplay").html('<h3>Loading alignment...</h3>');
-			$.ajax({
+			return $.ajax({
 				type: "GET",
 				url: `/clustal/${reqParams.idProt}/${reqParams.filterEValue}`,
 				contentType: "application/json; charset=utf-8",
@@ -250,12 +261,6 @@
 
 						printJSAV('sequenceDisplay', MySeqs, MyOptions);
 						$('#sequenceDisplay').css("width", "revert");
-						$('div.JSAV > .outerseqtable > .seqtable > table > tbody > tr.seqrow > td.idCell > a')
-							.each((i,e) => {
-								let pID = $(e).parent().parent().attr("id").split('|')[1];
-								$(e).removeAttr("href");
-								$(e).attr("onclick",`set3dViewerIDs("${reqParams.idProt + (reqParams.idProt != pID ? '|' + pID : '' )}")`);
-							});
 						
 						let pIdHomo = data.alignment.map((e) => e.id.split('|')[2]).filter((e) => e != reqParams.idProt);
 						$('#divCmb3dViewSelector').html(`
@@ -263,6 +268,8 @@
 							<option value="${reqParams.idProt}" selected="selected">${reqParams.idProt}</option>
 							${pIdHomo.reduce(((str,e) => str + `<option value="${reqParams.idProt}|${e}">${reqParams.idProt} | ${e}</option>`), '')}
 						</select>`);
+
+						successCallback();
 					}
 				},
 				error(error) {
@@ -271,7 +278,7 @@
 				}
 			});
 		}
-		
+
 		function set3dViewerIDs(pIDs) {
 			pIDs = pIDs.split('|');
 			if (pIDs.length == 2)
