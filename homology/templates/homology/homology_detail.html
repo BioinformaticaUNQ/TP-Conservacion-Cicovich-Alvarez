@@ -34,14 +34,26 @@
 		body {font-family: Verdana, Arial, Helvetica, sans-serif;}
 
 		.nonBreak {
-			overflow-x: auto;
 			display: flex;
+			width: -webkit-fill-available;
 		}
-
 		.nonBreak p {
 			font-family:'Lucida Console', monospace;
 			white-space: pre;
 			margin: 0;
+			overflow-x: auto;
+			width: -webkit-fill-available;
+		}
+		.nonBreak p.labels {
+			font-family:'Lucida Console', monospace;
+			white-space: pre;
+			margin: 0;
+			overflow: visible;
+			width: revert;
+		}
+		.nonBreak p > span > h3 {
+			width: fit-content;
+			margin: auto;
 		}
 
 		.JSAV .tooltip , .JSAVControls .tooltip {
@@ -51,6 +63,10 @@
 		}
 		.JSAVControls , div.JSAVControls > span > p {
 			margin: 0;
+		}
+
+		.JSAV > .header > table > tbody > tr > td.idCell {
+			display: none;
 		}
 
 	</style>
@@ -90,27 +106,36 @@
 				</div>
 			</div>
 			<div class="col-sm-8">
-
-				<div id='sequenceDisplay'></div>
+				
+				<div class="row">
+					<div class="col-sm-12">
+						<strong>Alineamiento de secuencias homologas</strong>
+					</div>
+				</div>
+				<div class="row">
+					<div id='sequenceDisplay'></div>
+				</div>
 
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2 ">
-				<strong>Conservation 1º:</strong>
+			<div class="col-sm-2 text-right">
+				<strong>Conservacion&nbsp;1º:</strong>
 			</div>
 			<div class="col-sm-10 ">
 				<div class="nonBreak">
+					<p class="labels"><strong>consenso<br>filtrado({{ homology.filterConservationPersentage1 }}%)<br>porcentaje</strong></p>
 					<p><span id="pConservation1" ></span></p>
 				</div>
 			</div>
 		</div>
 		<div class="row">
-			<div class="col-sm-2 ">
-				<strong>Conservation 2º:</strong>
+			<div class="col-sm-2 text-right">
+				<strong>Conservacion&nbsp;2º:</strong>
 			</div>
 			<div class="col-sm-10 ">
 				<div class="nonBreak">
+					<p class="labels"><strong>consenso<br>filtrado({{ homology.filterConservationPersentage2 }}%)<br>porcentaje</strong></p>
 					<p><span id="pConservation2" ></span></p>
 				</div>
 			</div>
@@ -125,7 +150,7 @@
 					getConservation_2();
 				});
 			});
-			
+
 			configure_iCn3D();
 
 			setViewer_SingleElement(reqParams.idProt);
@@ -153,16 +178,16 @@
 		};
 
 		var MyOptions = Array();
-		MyOptions.sortable = true;
-		MyOptions.selectable = true;
-		MyOptions.deletable = true;
+		MyOptions.sortable = false;
+		MyOptions.selectable = false;
+		MyOptions.deletable = false;
 		MyOptions.highlight = [3,5,10,14];
 		//MyOptions.submit = "http://www.bioinf.org.uk/software/jsav/echo.cgi";
 		//MyOptions.action = "myAction(MySeqs)";
 		//MyOptions.actionLabel = "My Action";
 		MyOptions.toggleDotify = true;
 		MyOptions.toggleNocolour = true;
-		MyOptions.fasta = false;
+		MyOptions.fasta = true;
 		MyOptions.consensus = true;
 		MyOptions.colourScheme = "clustal";
 		MyOptions.selectColour = true;
@@ -174,13 +199,7 @@
 		function createArrayOfLen(x) {
 			return Array.from({length: x}, (_, i) => i + 1)
 		}
-		//var labels = createArrayOfLen(MySeqs[0].sequence.length).map((e) => `L${e}`);
-		//MyOptions.labels = labels;
-
-		// MyOptions.autoLabels = true;
 		
-		//printJSAV('sequenceDisplay', MySeqs, MyOptions);
-
 		function getConservation_1(successCallback) {
 			$("#pConservation1").html('<h3>Loading...</h3>');
 			return $.ajax({
@@ -234,9 +253,12 @@
 						successCallback();
 					}
 				},
-				error(error) {
-					console.error(error);
-					$("#pConservation2").html('<h3>Error inesperado al calcular la conservacion.</h3>');
+				error(err) {
+					let message = "Error inesperado al calcular la conservacion.";
+					if (err.status == 404) {
+						message = err.responseJSON.message;
+					}
+					$("#pConservation2").html(`<h3>${message}</h3>`);
 				}
 			});
 		}
@@ -263,18 +285,16 @@
 						$('#sequenceDisplay').css("width", "revert");
 						
 						let pIdHomo = data.alignment.map((e) => e.id.split('|')[2]).filter((e) => e != reqParams.idProt);
-						$('#divCmb3dViewSelector').html(`
-						<select id="cmb3dViewSelector" onchange="cmb3dViewSelector_onChange()">
-							<option value="${reqParams.idProt}" selected="selected">${reqParams.idProt}</option>
-							${pIdHomo.reduce(((str,e) => str + `<option value="${reqParams.idProt}|${e}">${reqParams.idProt} | ${e}</option>`), '')}
-						</select>`);
-
+						
 						successCallback();
 					}
 				},
-				error(error) {
-					console.error(error);
-					$("#sequenceDisplay").html('<h3>Error inesperado al buscar el alineamiento.</h3>');
+				error(err) {
+					let message = "Error inesperado al buscar el alineamiento.";
+					if (err.status == 404) {
+						message = err.responseJSON.message;
+					}
+					$("#sequenceDisplay").html(`<h3>${message}</h3>`);
 				}
 			});
 		}

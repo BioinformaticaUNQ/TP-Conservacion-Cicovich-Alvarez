@@ -1,7 +1,7 @@
 from Bio import SeqIO
 import functools
 import operator
-from .clustal import getClustalOutputPath
+from .clustal import getAlignmentFile
 
 foldr = lambda func, acc, xs: functools.reduce(lambda x, y: func(y, x), xs[::-1], acc)
 
@@ -33,8 +33,7 @@ def addToSeqs(line, seqs):
 
 
 def getSeqs(pId, E_VALUE_ESPERADO):
-    #filepath = 'aligned.fasta'
-    filepath = getClustalOutputPath(pId, E_VALUE_ESPERADO)
+    filepath = getAlignmentFile(pId, E_VALUE_ESPERADO)
     seqs = {}
     fp = open(filepath)
     # Esto crea un map donde cada clave es el nombre y tiene como valor su secuencia ya alineada
@@ -62,7 +61,7 @@ def calculateConservation(inlineAminoacids):
 
 
 def calculateConservedZone(pId, E_VALUE_ESPERADO, porcentage):
-    inputFile = getClustalOutputPath(pId, E_VALUE_ESPERADO)
+    inputFile = getAlignmentFile(pId, E_VALUE_ESPERADO)
     seqs = SeqIO.parse(inputFile, 'clustal')
     original = next(seqs)
     matching = []

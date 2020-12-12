@@ -68,7 +68,7 @@ def calculateConservedZone(structures):
 
 def calculateSecondaryStructureConservation(pdbId, E_VALUE):
     structures = []
-    for record in SeqIO.parse(clustal.getClustalOutputPath(pdbId, E_VALUE), 'clustal'):
+    for record in SeqIO.parse(clustal.getAlignmentFile(pdbId, E_VALUE), 'clustal'):
         gapped = fillWithGaps(record.seq, getSecondaryStructure(record.id[5:9]))
         structures.append(gapped)
         time.sleep(0.5)
