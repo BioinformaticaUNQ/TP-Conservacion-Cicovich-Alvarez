@@ -29,7 +29,20 @@ La logica definida para procesar y obtener la informacion necesaria del proyecto
  
  ### `dssp.py`
  Es necesario correr el archivo `dssp.py` luego de haber ejecutado `main.py`. Este programa nos mostrara la estructura secundaria consenso y la lista de pares (Estructura del aminoacido, porcentaje) en el mismo formato que `main.py`  
- 
+
+## Servicios utilizados
+
+* Descarga de pdb para visor 3d 
+  https://files.rcsb.org/view/
+* Descarga de pdb para alineamientos en visor 3d
+  https://opm-assets.storage.googleapis.com/pdb/
+* Descarga de archivos fasta
+  https://www.rcsb.org/fasta/entry/
+* Descarga de archivos pdb
+  https://files.rcsb.org/download/
+* Consulta de proteinas homologas por blast de biopython
+  http://ncbi.github.io/blast-cloud/dev/api.html
+
 
 ## Instalacion
 
