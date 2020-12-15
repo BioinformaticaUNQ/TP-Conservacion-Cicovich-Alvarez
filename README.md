@@ -1,8 +1,10 @@
 # Graficador de zonas conservadas de proteínas
 
-![Imagen demo](./demo-picture.png)
+![Imagen demo](docs/demo-picture.png)
 
 ## Informacion de proyecto
+
+* La información de los cambios en el proyecto posteriores a la entrega esta [aquí](./docs/cambios-post-demo.md)
 
 El proyecto esta desarrollado en Django con la intención de publicar un sitio que pueda ser consumido en una red interna desde cualquier navegador. El uso de esta herramienta también nos da la posibilidad de usar Python para desarrollar la lógica del back-end. A la par, utilizamos Pipenv para el manejo de dependencias del proyecto.
 A continuación se detallan algunas dependencias del proyecto:
