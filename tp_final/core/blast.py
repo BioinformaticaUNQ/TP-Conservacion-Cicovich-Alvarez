@@ -13,18 +13,13 @@ def fetchFromBlast(pId):
     fasta_string = getFasta(pId)
     print("Buscando en Blast sobre internet... *Se recomienda preparar el mate*")
     result_handle = NCBIWWW.qblast("blastp", "pdb", fasta_string)
-    # result_handle = open("my_blast.xml")
-    #blast_records = NCBIXML.read(result_handle)
-    #clustalFile = open(getBlastPath(pId), 'w')
-    #clustalFile.write(blast_records)
 
     with open(getBlastPath(pId), "w") as out_handle:
         out_handle.write(result_handle.read())
 
     result_handle.close()
-
     blast_records = NCBIXML.parse(open(getBlastPath(pId)))
-    return blast_records#.content.decode("utf-8") 
+    return blast_records
 
 def getBlast(pId):
     file = pathlib.Path(getBlastPath(pId))
@@ -61,16 +56,6 @@ def getClustalInput(pId, E_VALUE_ESPERADO):
         return file.read_text()
     else:
         return generateClustalInput(pId, E_VALUE_ESPERADO)
-
-#https://www.rcsb.org/fasta/entry/1LXA
-#https://files.rcsb.org/download/1LXA.pdb
-
-# Lo correcto seria pegarle a uniprot y despues fijarse cual existe en pdb
-#Sino
-# Pegarle a pdb
-# https://ftp.ncbi.nlm.nih.gov/blast/db/pdbaa.tar.gz
-# 10 a la -10 PARAMETRIZAR
-
 
 if __name__ == '__main__':
     print(getClustalInput('1LXA', 0.0000000000001))

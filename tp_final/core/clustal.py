@@ -21,7 +21,7 @@ def align(pId, E_VALUE_ESPERADO):
     getClustalInput(pId, E_VALUE_ESPERADO)
     inFile = getClustalInputPath(pId, E_VALUE_ESPERADO)
     outFile = getClustalOutputPath(pId, E_VALUE_ESPERADO)
-    clustalw_cline = ClustalwCommandline(clustalw_cmd, infile=inFile, outfile=outFile)  # , output='fasta')
+    clustalw_cline = ClustalwCommandline(clustalw_cmd, infile=inFile, outfile=outFile, type="PROTEIN", gapopen=50)  # , output='fasta')
     clustalw_cline()
     return outFile
 
